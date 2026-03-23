@@ -1,5 +1,5 @@
-# 与 compose.yaml 合并：仅 HTTP，直接暴露应用端口
+# 与 compose.yaml 合并：仅 HTTP（由 deploy.sh 生成 PORT_MAPPING，如 7860:7860 或 127.0.0.1:7860:7860）
 services:
   app:
     ports:
-      - "${HTTP_PORT:-7860}:7860"
+      - "${PORT_MAPPING}"

@@ -45,6 +45,19 @@ tag="$(get_yaml tag)"
 enable_ssl="$(get_yaml enable_ssl)"
 http_port="$(get_yaml http_port)"
 http_port="${http_port:-7860}"
+caddy_http_port="$(get_yaml caddy_http_port)"
+caddy_https_port="$(get_yaml caddy_https_port)"
+caddy_http_port="${caddy_http_port:-80}"
+caddy_https_port="${caddy_https_port:-443}"
+
+bind_host="$(get_yaml bind_host)"
+bind_host="${bind_host// /}"
+# 已有 Nginx/Traefik/Caddy 等占用 80/443 并负责 Let's Encrypt 时：enable_ssl 设 false，由反代把域名转到本机 http_port
+if [[ -n "$bind_host" ]]; then
+  port_mapping="${bind_host}:${http_port}:7860"
+else
+  port_mapping="${http_port}:7860"
+fi
 
 if [[ -z "$image" || -z "$tag" ]]; then
   echo "错误: config.yml 中 image / tag 不能为空" >&2
@@ -57,6 +70,9 @@ TAG=$tag
 DOMAIN=$domain
 ACME_EMAIL=$acme_email
 HTTP_PORT=$http_port
+CADDY_HTTP_PORT=$caddy_http_port
+CADDY_HTTPS_PORT=$caddy_https_port
+PORT_MAPPING=$port_mapping
 EOF
 
 COMPOSE_BASE=( -f compose.yaml )
@@ -81,12 +97,19 @@ if [[ "$enable_ssl" == "true" ]]; then
     exit 1
   fi
   echo "模式: HTTPS (Caddy + Let's Encrypt)，域名: $domain"
+  echo "      宿主机端口: HTTP ${caddy_http_port}->80, HTTPS ${caddy_https_port}->443"
   docker compose "${COMPOSE_BASE[@]}" -f compose.ssl.yaml pull
   docker compose "${COMPOSE_BASE[@]}" -f compose.ssl.yaml up -d
-  echo "部署完成。请访问: https://$domain/"
+  if [[ "$caddy_https_port" == "443" ]]; then
+    echo "部署完成。请访问: https://$domain/"
+  else
+    echo "部署完成。HTTPS 非标准端口，请访问: https://$domain:${caddy_https_port}/"
+  fi
 else
-  echo "模式: 仅 HTTP，端口: $http_port -> 容器 7860"
+  echo "模式: 仅 HTTP（无内置 Caddy），映射: $port_mapping -> 容器 7860"
   docker compose "${COMPOSE_BASE[@]}" -f compose.local.yaml pull
   docker compose "${COMPOSE_BASE[@]}" -f compose.local.yaml up -d
-  echo "部署完成。请访问: http://<本机IP>:$http_port/"
+  echo "部署完成。"
+  echo "  若本机另有反代并已配置 Let's Encrypt：在反代里把该域名 proxy_pass 到 http://127.0.0.1:$http_port（同机建议 config 里 bind_host: 127.0.0.1）"
+  echo "  直连（无反代）时可访问: http://<本机IP>:$http_port/"
 fi
