@@ -1,0 +1,1 @@
+服务器docker部署运行idphoto项目的部署脚本。
