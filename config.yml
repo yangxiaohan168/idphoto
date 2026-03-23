@@ -1,0 +1,9 @@
+# 仅 IP / HTTP 访问：enable_ssl 为 false，且不要配置 bind_host（或留空），端口会绑定 0.0.0.0
+# 浏览器访问: http://服务器IP:http_port  （云服务器需在安全组放行该端口）
+
+domain: "idphoto.xxxx.com"
+acme_email: "xxxxxx@qq.com"
+image: "linzeyi/hivision_idphotos"
+tag: "v1.3.1"
+enable_ssl: false
+http_port: 7860
