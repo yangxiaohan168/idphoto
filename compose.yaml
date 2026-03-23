@@ -1,0 +1,13 @@
+name: hivision-deploy
+
+services:
+  app:
+    image: ${IMAGE}:${TAG}
+    container_name: hivision_app
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: hivision_internal

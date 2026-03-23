@@ -1,0 +1,14 @@
+# 复制本文件为 config.yml 后按需修改，再运行 ./deploy.sh
+#
+# domain: 绑定的域名（开启 SSL 时必填，且 DNS A 记录需指向本机公网 IP）
+# acme_email: Let's Encrypt 证书到期等通知邮箱（建议真实邮箱）
+# image / tag: Docker 镜像与标签
+# enable_ssl: true 时通过 Caddy 自动申请免费 HTTPS；false 时仅映射 http_port 到本机
+# http_port: 未启用 SSL 时，浏览器访问 http://本机IP:该端口
+
+domain: "idphoto.example.com"
+acme_email: "you@example.com"
+image: "linzeyi/hivision_idphotos"
+tag: "v1.3.1"
+enable_ssl: true
+http_port: 7860

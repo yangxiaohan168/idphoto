@@ -1,0 +1,24 @@
+# 与 compose.yaml 合并：Caddy 反向代理 + 自动 Let's Encrypt
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: hivision_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - internal
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:

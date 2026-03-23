@@ -1,0 +1,5 @@
+# 与 compose.yaml 合并：仅 HTTP，直接暴露应用端口
+services:
+  app:
+    ports:
+      - "${HTTP_PORT:-7860}:7860"

@@ -1,0 +1,11 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode gzip zstd
+	header {
+		-Server
+	}
+	reverse_proxy app:7860
+}
