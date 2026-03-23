@@ -35,7 +35,8 @@ fi
 # 读取简单 key: value YAML（扁平 key: value，与 config.example.yml 约定一致）
 get_yaml() {
   local key="$1"
-  grep -E "^[[:space:]]*${key}:" "$CONFIG" | head -1 | sed -E "s/^[[:space:]]*${key}:[[:space:]]*//" | sed -E 's/^["'\'']|["'\'']$//g' | sed -E 's/[[:space:]]*#.*$//'
+  # grep 无匹配时退出码为 1；在 set -o pipefail 下会导致整条管道失败并静默退出，故对 grep 使用 || true
+  { grep -E "^[[:space:]]*${key}:" "$CONFIG" || true; } | head -1 | sed -E "s/^[[:space:]]*${key}:[[:space:]]*//" | sed -E 's/^["'\'']|["'\'']$//g' | sed -E 's/[[:space:]]*#.*$//'
 }
 
 domain="$(get_yaml domain)"

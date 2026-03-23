@@ -1,0 +1,2 @@
+# 避免在 Linux 上执行到 CRLF 导致 shebang 异常
+*.sh text eol=lf
